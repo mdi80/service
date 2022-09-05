@@ -1,0 +1,27 @@
+{% extends "main/layout.html" %}
+{% block body %}
+
+<div class="container-fluid">
+    {% if role == 1 %}
+        <a style="display: block;margin: 10px;" href="{% url 'main:edit-drivers' %}"
+        type="button" class="btn btn-outline-primary btn-lg">ویرایش رانندگان</a>
+        <a type="button" class="btn btn-outline-secondary btn-lg" href="{% url 'main:edit-students' %}"
+        style="display: block;margin: 10px;">ویرایش دانش آموزان</a>
+        <a type="button" class="btn btn-outline-danger btn-lg" href="{% url 'main:services' %}"
+        style="display: block;margin: 10px;"> سرویس ها</a>
+        <a style="display: block;margin: 10px;" href="{% url 'main:add-service' %}"
+        type="button" class="btn btn-outline-primary btn-lg">افزودن سرویس</a>
+    {% elif role == 2 %}
+        <a style="display: block;margin: 10px;" href="{% url 'main:edit-drivers' %}"
+        type="button" class="btn btn-outline-primary btn-lg">سرویس های من</a>
+        <a type="button" class="btn btn-outline-secondary btn-lg" href="{% url 'main:edit-students' %}"
+        style="display: block;margin: 10px;">سابقه سرویس ها</a>
+    {% elif role == 3 %}
+        <a style="display: block;margin: 10px;" href="{% url 'main:edit-drivers' %}"
+        type="button" class="btn btn-outline-primary btn-lg">دانش آموزان من</a>
+
+    {% endif %}
+</div>
+
+
+{% endblock %}
