@@ -23,7 +23,7 @@ def add(request):
 
     form = DriverForm(request.POST or None ,request.FILES or None)
 
-    
+    print("test")
     form.instance.role = User.DRIVER
     if form.is_valid():
         form.save()
