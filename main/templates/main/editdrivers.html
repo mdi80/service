@@ -6,6 +6,14 @@
         display: inline-block;
     }
 </style>
+<script>
+
+    function deleteitem(e,id){
+        alert('here')
+    }
+
+</script>
+
 
 <div>
     <a style="display: block;margin: 10px;" href="{% url 'main:add-driver' %}"
@@ -18,19 +26,19 @@
             <div class="d-flex w-100 justify-content-between">
                 <div>
                     <h6 class="mb-1">نام : {{ driver.name }}</h6>
-                    
-                    <i>خودرو : {{ driver.car }}</i>
+                        <i>خودرو : {{ driver.car }}</i>
                 </div>
                 <div style="align-self: center;">
                     <span class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal" 
                     data-bs-id="{{driver.id}}" 
                     data-bs-name="{{driver.name}}" 
                     data-bs-services="{{driver.services}}" 
+                    data-bs-username="{{driver.username}}" 
                     data-bs-startdate="{{driver.startdate}}" 
                     data-bs-car="{{driver.car}}" 
                     data-bs-plq="{{driver.plq}}" ><i class="fa fa-info" aria-hidden="true"></i></span>
-                    <a class="btn btn-outline-danger" href="{% url 'main:delete-driver' id=driver.id %}"><i class="fa fa-trash" aria-hidden="true"></i></a>
-                    <a  class="btn btn-outline-primary" href="{% url 'main:edit-driver' id=driver.id %}"><i class="fa fa-edit" aria-hidden="true"></i></a>
+                    <span class="btn btn-outline-danger" class="deletebtn" data-bs-toggle="modal" data-bs-target="#delete-modal" data-bs-id="{{driver.id}}" data-bs-name="{{driver.name}}" ><i class="fa fa-trash" aria-hidden="true"></i></span>
+                    <a  class="btn btn-outline-success" href="{% url 'main:edit-driver' id=driver.id %}"><i class="fa fa-edit" aria-hidden="true"></i></a>
                 </div>
                 
 
@@ -49,30 +57,69 @@
 <!-- Modal -->
 <div class="modal fade" id="modal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
     <div class="modal-dialog">
-    <div class="modal-content">
-        <div class="modal-header">
-        <h5 class="modal-title" id="modalLabel">نمایش راننده</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-            <div class="d-flex w-100 justify-content-between">
-                <h5 class="mb-1"></h5>
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="modalLabel">نمایش راننده</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            نام راننده : <p class="mb-1" id="name"></p><br>
-            تاریخ شروع به کار : <p class="mb-1" id="startdate"></p><br>
-            خودرو : <p class="mb-1" id="car"></p><br>
-            پلاک : <p class="mb-1" id="plq"></p> <br>
-            سرویس ها :  <br> <p class="mb-1" id="services"></p>  
+            <div class="modal-body">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1"></h5>
+                </div>
+                نام کاربری : <p class="mb-1" id="username"></p><br>
+                نام راننده : <p class="mb-1" id="name"></p><br>
+                تاریخ شروع به کار : <p class="mb-1" id="startdate"></p><br>
+                خودرو : <p class="mb-1" id="car"></p><br>
+                پلاک : <p class="mb-1" id="plq"></p> <br>
+                سرویس ها :  <br> <p class="mb-1" id="services"></p>  
+            </div>
+            <div class="modal-footer" style="width: 100%;" >
+                <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">تموم</button>
+            </div>
         </div>
-        <div class="modal-footer" style="width: 100%;" >
-            <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">تموم</button>
-        </div>
-    </div>
     </div>
 </div>
 
 
+<div id="delete-modal" class="modal fade" role="dialog" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header" dir="">
+                <h4 class="modal-title">آیا مطمعنید؟</h4>
+                <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+
+            </div>
+            <div class="modal-body">
+                <!-- The problem seems to be here:--> 
+                <p> آیا میخواهید  <b></b> را حذف کنید؟</p>
+            </div>
+            <div class="modal-footer">
+                <form asp-controller="Billing" action="{% url 'main:delete-driver' %}" asp-action="Delete" method="post" id="deleteform" class="form-inline" role="form">
+                    {% csrf_token %}
+                    <input type="hidden" id="postiddelete" name="id">
+                    <button type="button" class="btn btn-default" data-bs-dismiss="modal">بستن</button>
+                    <button type="submit" form="deleteform" class="btn btn-danger"><span class="glyphicon glyphicon-trash" style="vertical-align:middle;margin-top: -5px"></span>حذف</button>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div> 
+
 <script>
+
+
+    var del_modal = document.getElementById('delete-modal')
+    del_modal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget
+        var name = button.getAttribute('data-bs-name')
+        del_modal.querySelector('.modal-body b').textContent = name
+        var id = button.getAttribute('data-bs-id')
+        document.getElementById('postiddelete').value = id
+
+    })
+
     var modal = document.getElementById('modal')
     modal.addEventListener('show.bs.modal', function (event) {
         
@@ -81,17 +128,19 @@
     var id = button.getAttribute('data-bs-id')
     var dname = button.getAttribute('data-bs-name')
     var dstartdate = button.getAttribute('data-bs-startdate')
+    var dusername = button.getAttribute('data-bs-username')
     var dservices = button.getAttribute('data-bs-services')
     var dcar = button.getAttribute('data-bs-car')
     var dplq = button.getAttribute('data-bs-plq')
 
     var name = modal.querySelector('.modal-body #name')
     var startdate = modal.querySelector('.modal-body #startdate')
+    var username = modal.querySelector('.modal-body #username')
     var services = modal.querySelector('.modal-body #services')
     var car = modal.querySelector('.modal-body #car')
     var plq = modal.querySelector('.modal-body #plq')
 
-    
+    username.textContent = dusername
     name.textContent = dname
     startdate.textContent = dstartdate
     services.textContent = dservices

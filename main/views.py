@@ -33,21 +33,22 @@ def dashboard(request):
 @role_required(User.ADMIN)
 def editdrivers(request):
 
-    drivers = Driver.objects.all()
+    drivers = Driver.objects.all().order_by('last_name')
 
 
     obj_drivers = []
     for driver in drivers:
         obj_driver = dict()
-        obj_driver['name'] = driver.name
+        obj_driver['name'] = f'{driver.first_name} {driver.last_name}'
         obj_driver['id'] = driver.id
-        obj_driver['startdate'] = driver.startdate
+        obj_driver['username'] = driver.username
+        obj_driver['startdate'] = str(driver.date_joined)
         obj_driver['car'] = driver.car
         obj_driver['plq'] = driver.plq
-        obj_driver['services'] = show_manytomany(driver.services)
+        obj_driver['services'] = show_manytomany(driver.service_set.all())
         obj_drivers.append(obj_driver)
 
 
-    return render(request,'main/editdrivers.html',{'drivers':drivers})
+    return render(request,'main/editdrivers.html',{'drivers':obj_drivers})
 
 
